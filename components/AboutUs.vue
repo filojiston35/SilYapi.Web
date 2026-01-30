@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     startCountAnimation() {
-      const durationMs = 20000;
+      const durationMs = 4000;
       this.startTimestamp = null;
 
       const step = (timestamp) => {

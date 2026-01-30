@@ -27,6 +27,7 @@
     "vue3-toastify": "^0.2.4"
   },
   "devDependencies": {
+    "@iconify/vue": "^5.0.0",
     "@nuxtjs/i18n": "^10.1.0",
     "@types/node": "^24.7.0",
     "cross-env": "^10.1.0",
