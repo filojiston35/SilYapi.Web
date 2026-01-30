@@ -1,0 +1,107 @@
+.services-section {
+    width: 100%;
+    padding: 80px 20px 20px 40px;
+    .section-title {
+        color: #2C304B;
+        border-left: 1px solid #2C304B;
+        font-size: 23px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        padding: 0px 20px;
+    }
+    .section-desc {
+        font-size: 14px;
+        font-weight: 300;
+        padding: 20px 25px;
+    }
+    .card {
+        margin: 20px;
+        width: 20rem;
+        transition: 0.2s;
+        &:hover {
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            cursor: pointer;
+            .card-action {
+                a {
+                    letter-spacing: .1rem;
+                }
+            }
+        }
+        .card-title {
+            font-size: 1rem;
+        }
+        .card-text {
+            font-size: .8rem;
+        }
+        .card-action {
+            text-align: right;
+            a {
+                display: inline-block;
+                border: none;
+                color: #707070;
+                text-decoration: none;
+                margin-top: 10px;
+                text-transform: uppercase;
+                transition: 0.2s;
+                font-size: .8rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    .services-section {
+        padding: 40px 10px 10px 20px;
+        .section-title {
+            font-size: 20px;
+        }
+        .section-desc {
+            font-size: 11px;
+            padding: 10px 15px;
+        }
+        .card {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            .card-img-top {
+                width: 50%;
+            }
+            .card-body {
+                .card-text {
+                    min-height: 80%;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .services-section {
+        padding: 40px 5px 5px 10px;
+        .section-title {
+            font-size: 20px;
+            padding: 0px 10px;
+        }
+        .section-desc {
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            .card-img-top {
+                width: 100%;
+            }
+            .card-body {
+                .card-title {
+                    font-size: .8rem;
+                }
+                .card-text {
+                    min-height: auto;
+                    font-size: .6rem;
+                }
+            }
+        }
+    }
+}

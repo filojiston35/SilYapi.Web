@@ -1,0 +1,177 @@
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 40px 100px;
+    z-index: 1000;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    transition: 0.5s;
+    &.fixed {
+        position: fixed;
+        background: #2C304B;
+        padding: 20px 35px 20px 20px !important;
+        .logo {
+            width: 80px;
+        }
+    }
+    &.active {
+        background: transparent !important;
+        color: #343a40!important;
+        .menu-toggle span {
+            background: #343a40!important;
+        }
+    }
+    .logo {
+        width: 150px;
+        height: auto;
+    }
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: white;
+    transform: translateX(-100%);
+    transition: 0.4s;
+    &.active {
+        transform: translateX(0);
+    }
+    .contact-container {
+        display: block;
+        flex-direction: column;
+        justify-content: center;
+        width: 400px;
+        height: 380px;
+        border-right: 1px solid #000;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: 0.5s;
+        transition-delay: .3s;
+        &.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .header {
+            font-weight: 600;
+            font-size: 20px;
+        }
+        .sub-header {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .address {
+            padding: 10px;
+            .title {
+                display: block;
+                font-weight: 600;
+            }
+            .description {
+                font-size: 14px;
+                font-weight: 400;
+            }
+        }
+        .email {
+            padding: 10px;
+            .title {
+                display: block;
+                font-weight: 600;
+            }
+            .description {
+                font-size: 14px;
+                font-weight: 400;
+            }
+        }
+        .phone {
+            padding: 10px;
+            .title {
+                display: block;
+                font-weight: 600;
+            }
+            .description {
+                font-size: 14px;
+                font-weight: 400;
+            }
+        }
+    }
+    .navigation {
+        width: 400px;
+        text-align: center;
+        position: relative;
+        list-style: none;
+        opacity: 0;
+        transform: translateY(-100%);
+        transition: 0.5s;
+        transition-delay: .3s;
+        &.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        li {
+            margin: 7px 10px;
+            .navigation-link {
+                font-weight: 300;
+                text-decoration: none;
+                font-size: 20px;
+                color: #626262;
+                // border-bottom: 1px solid;
+                // border-color: #111;
+                // transition: border-width 0.1s ease-in-out;
+                &::after {
+                    transition: all ease-in-out .2s;
+                    background: none repeat scroll 0 0 #626262;
+                    content: "";
+                    display: block;
+                    height: 2px;
+                    width: 0;
+                    margin: auto;
+                }
+                &:hover {
+                    &::after {
+                        width: 40%;
+                    }
+                }
+                &.active {
+                    &::after {
+                        width: 60%;
+                        background: none repeat scroll 0 0 #111;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    header {
+        padding: 40px;
+        .logo {
+            width: 100px;
+        }
+    }
+    .menu {
+        &.active {
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    header {
+        padding: 20px;
+        .logo {
+            width: 100px;
+        }
+    }
+}
