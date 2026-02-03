@@ -50,6 +50,8 @@
                   class="card-img"
                   alt=""
                   :src="project.thumbnail"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div class="card-body">
@@ -120,6 +122,8 @@
                   <img
                     :src="image"
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               </div>
