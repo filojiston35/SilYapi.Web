@@ -5,6 +5,7 @@
     id="scroller"
   >
     <HeaderDefault />
+    <!-- SPLASH SCREEN - YORUM SATIRINDA
     <div
       v-show="isSplashVisible"
       class="splash-screen"
@@ -15,6 +16,7 @@
         alt=""
       />
     </div>
+    -->
     <!-- SHOWCASE SECTION -->
     <section
       id="mainpage"
@@ -87,29 +89,34 @@ export default {
   },
   data: () => {
     return {
-      isSplashVisible: true,
-      isSplashFading: false,
+      // SPLASH SCREEN - YORUM SATIRINDA
+      // isSplashVisible: true,
+      // isSplashFading: false,
       timers: [],
     };
   },
   mounted() {
-    this.handleWindowLoad = this.handleWindowLoad.bind(this);
-    if (document.readyState === "complete") {
-      this.handleWindowLoad();
-    } else {
-      window.addEventListener("load", this.handleWindowLoad);
-    }
+    // SPLASH SCREEN - YORUM SATIRINDA
+    // this.handleWindowLoad = this.handleWindowLoad.bind(this);
+    // if (document.readyState === "complete") {
+    //   this.handleWindowLoad();
+    // } else {
+    //   window.addEventListener("load", this.handleWindowLoad);
+    // }
+    // Video'yu direkt oynat
+    this.playShowcaseVideo();
   },
   beforeDestroy() {
-    window.removeEventListener("load", this.handleWindowLoad);
+    // SPLASH SCREEN - YORUM SATIRINDA
+    // window.removeEventListener("load", this.handleWindowLoad);
     this.clearTimers();
-    this.setBodyOverflow("auto");
+    // this.setBodyOverflow("auto");
   },
-  watch: {
-    isSplashVisible(isVisible) {
-      this.setBodyOverflow(isVisible ? "hidden" : "auto");
-    },
-  },
+  // watch: {
+  //   isSplashVisible(isVisible) {
+  //     this.setBodyOverflow(isVisible ? "hidden" : "auto");
+  //   },
+  // },
   methods: {
     setBodyOverflow(value) {
       document.body.style.overflowY = value;
@@ -137,19 +144,20 @@ export default {
           console.log("error playing", err);
         });
     },
-    handleWindowLoad() {
-      this.playShowcaseVideo();
+    // SPLASH SCREEN - YORUM SATIRINDA
+    // handleWindowLoad() {
+    //   this.playShowcaseVideo();
 
-      const fadeTimer = setTimeout(() => {
-        this.isSplashFading = true;
-        const hideTimer = setTimeout(() => {
-          this.isSplashVisible = false;
-          this.isSplashFading = false;
-        }, 500);
-        this.addTimer(hideTimer);
-      }, 1000);
-      this.addTimer(fadeTimer);
-    },
+    //   const fadeTimer = setTimeout(() => {
+    //     this.isSplashFading = true;
+    //     const hideTimer = setTimeout(() => {
+    //       this.isSplashVisible = false;
+    //       this.isSplashFading = false;
+    //     }, 500);
+    //     this.addTimer(hideTimer);
+    //   }, 1000);
+    //   this.addTimer(fadeTimer);
+    // },
   },
 };
 </script>

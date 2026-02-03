@@ -7,9 +7,9 @@
     <div>
       <h3>SİL Baştan YAPI'yoruz</h3>
       <p>
-        1982 yılından itibaren gelen tecrübe ile şirketimizin bünyesinde bulunan
-        mühendis ,mimar ve iç mimarlarımız sizlerin yaşam alanlarını güvenle
-        inşa ediyor.
+        1982 yılından bu yana edindiğimiz tecrübe ile bünyemizde bulunan
+        mühendis, mimar ve iç mimarlarımız, yaşam alanlarınızı güvenle inşa
+        ediyor.
       </p>
       <a
         @click="openRequestForm()"
