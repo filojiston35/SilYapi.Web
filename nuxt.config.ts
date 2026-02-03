@@ -1,5 +1,4 @@
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
-const formActionUrl = process.env.BASE_URL ?? "";
 export default defineNuxtConfig({
   // ön yüklemeyi devre dışı bırak
   typescript: {
@@ -45,7 +44,6 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    "nuxt-security",
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error
@@ -59,7 +57,7 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          api: "modern-compiler", // or 'modern'
+          // Modern SCSS compiler kullanılıyor
         },
       },
     },
@@ -71,26 +69,6 @@ export default defineNuxtConfig({
           drop_console: false, // 👈 console.* silinir
           drop_debugger: true, // 👈 debugger silinir
         },
-      },
-    },
-  },
-  security: {
-    // removeLoggers: false,
-    sri: true,
-    nonce: true,
-    headers: {
-      strictTransportSecurity: {
-        maxAge: 31536000,
-        includeSubdomains: true,
-      },
-      xXSSProtection: "1; mode=block",
-      contentSecurityPolicy: {
-        "script-src": ["'self'", "data:", "'nonce-{{nonce}}'"],
-        "script-src-attr": ["'self'", "'unsafe-inline'"],
-        "form-action": ["'self'", formActionUrl],
-        "img-src": false,
-        "worker-src": ["'self'", "data:", "blob:"],
-        "report-uri": process.env.BASE_URL + "api/csp-report",
       },
     },
   },

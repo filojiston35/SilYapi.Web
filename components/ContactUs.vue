@@ -17,15 +17,22 @@
           xl="4"
           class="my-1"
         >
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3010.8718994262895!2d28.86230031571861!3d41.00617692750249!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cabb4a1141a37f%3A0x3e185f3859e9541a!2sBah%C3%A7elievler%20Merkez%2C%20Talatpa%C5%9Fa%20Cd%20No%3A49%2C%2034180%20Bah%C3%A7elievler%2F%C4%B0stanbul!5e0!3m2!1str!2str!4v1672382649918!5m2!1str!2str"
-            width="100%"
-            height="350"
-            style="border: 3px"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
+          <ClientOnly>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3010.8718994262895!2d28.86230031571861!3d41.00617692750249!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cabb4a1141a37f%3A0x3e185f3859e9541a!2sBah%C3%A7elievler%20Merkez%2C%20Talatpa%C5%9Fa%20Cd%20No%3A49%2C%2034180%20Bah%C3%A7elievler%2F%C4%B0stanbul!5e0!3m2!1str!2str!4v1672382649918!5m2!1str!2str"
+              width="100%"
+              height="350"
+              style="border: 3px"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+            <template #fallback>
+              <div style="width: 100%; height: 350px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                <span>Harita yükleniyor...</span>
+              </div>
+            </template>
+          </ClientOnly>
         </v-col>
         <v-col
           cols="12"
