@@ -14,10 +14,10 @@
       <div class="column-1">HAKKIMIZDA</div>
       <div class="column-2">
         <p>
-          1982 yılında itibaren inşaat sektöründeki faaliyetlerimize aynı kalite
-          ve heyecan ile günümüz mimarisine uyum sağlayan modern,
-          sürdürülebilir, fonksiyonel ve güvenilir yapılar inşa etmeye devam
-          ediyoruz.
+          1982 yılından itibaren inşaat sektöründeki faaliyetlerimizi, aynı
+          kalite ve heyecanla; günümüz mimarisine uyum sağlayan modern,
+          sürdürülebilir, fonksiyonel ve güvenilir yapılar inşa ederek
+          sürdürmekteyiz.
         </p>
         <br /><br />
         <p>
@@ -42,11 +42,13 @@ export default {
       hasAnimated: false,
       observer: null,
       animationFrameId: null,
-      startTimestamp: null
+      startTimestamp: null,
     };
   },
   mounted() {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (prefersReducedMotion) {
       this.years = this.targetYears;
       this.hasAnimated = true;
@@ -67,8 +69,8 @@ export default {
       },
       {
         root,
-        threshold: 0.4
-      }
+        threshold: 0.4,
+      },
     );
 
     if (this.$refs.aboutUsSection) {
@@ -92,7 +94,10 @@ export default {
         if (!this.startTimestamp) {
           this.startTimestamp = timestamp;
         }
-        const progress = Math.min((timestamp - this.startTimestamp) / durationMs, 1);
+        const progress = Math.min(
+          (timestamp - this.startTimestamp) / durationMs,
+          1,
+        );
         this.years = Math.floor(this.targetYears * progress);
 
         if (progress < 1) {
@@ -103,8 +108,8 @@ export default {
       };
 
       this.animationFrameId = requestAnimationFrame(step);
-    }
-  }
+    },
+  },
 };
 </script>
 <style></style>
