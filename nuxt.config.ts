@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     transpile: ["vuetify"],
   },
   nitro: {
-    preset: "iis",
+    preset: "vercel",
   },
   components: true,
   // Diğer yapılandırmalar
