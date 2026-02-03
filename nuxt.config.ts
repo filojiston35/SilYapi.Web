@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: "Sil Yapı İnşaat - %s",
-      title: "Anasayfa",
+      title: "Sil Yapı İnşaat",
       htmlAttrs: {
         lang: "en",
       },
@@ -30,8 +30,15 @@ export default defineNuxtConfig({
       link: [
         {
           rel: "icon",
-          type: "image/x-icon",
-          href: "/images/favicon.ico",
+          type: "image/png",
+          sizes: "16x16",
+          href: "/images/favicon-16x16.png",
+        },
+        {
+          rel: "icon",
+          type: "image/png",
+          sizes: "32x32",
+          href: "/images/favicon-32x32.png",
         },
       ],
     },
