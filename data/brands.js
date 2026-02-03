@@ -57,7 +57,7 @@ export const brands = [
   },
   {
     id: 15,
-    name: "Limak",
+    name: "Limak Beton",
   },
   {
     id: 16,
@@ -117,18 +117,38 @@ export const brands = [
   },
   {
     id: 29,
-    name: "arçelik",
+    name: "Arçelik",
   },
   {
     id: 29,
-    name: "termoteknik",
+    name: "Termoteknik",
   },
   {
     id: 29,
-    name: "terraclick",
+    name: "Terraclick",
   },
   {
     id: 29,
-    name: "tezdoor",
+    name: "Tezdoor",
+  },
+  {
+    id: 30,
+    name: "Rehau",
+  },
+  {
+    id: 31,
+    name: "Franke",
+  },
+  {
+    id: 32,
+    name: "Grohe",
+  },
+  {
+    id: 33,
+    name: "Creavit",
+  },
+  {
+    id: 34,
+    name: "Kütahya Seramik",
   },
 ];

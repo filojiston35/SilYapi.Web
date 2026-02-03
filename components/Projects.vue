@@ -47,7 +47,6 @@
                   />
                 </div>
                 <img
-                  class="card-img"
                   alt=""
                   :src="project.thumbnail"
                   loading="lazy"

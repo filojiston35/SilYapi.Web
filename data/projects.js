@@ -178,7 +178,7 @@ export const projects = [
       "Bahçelievler İlçesi - Bahçelievler Mahallesi - İsmailpaşa Sokak",
     startDate: "2023",
     endDate: "2024",
-    thumbnail: "images/projects/project-13-1.jpeg",
+    thumbnail: "images/projects/project-13-2.jpeg",
     images: [
       "images/projects/project-13-1.jpeg",
       "images/projects/project-13-2.jpeg",

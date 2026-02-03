@@ -19,7 +19,7 @@
             color="white"
           />
         </span>
-        <span id="completedResidence">{{ completedResidence }}</span>
+        <span id="completedResidence">+{{ completedResidence }}</span>
         <span>Tamamlanan Mesken</span>
       </div>
       <div>
@@ -56,13 +56,17 @@ import { Icon } from "@iconify/vue";
 export default {
   name: "WhatWeDo",
   data() {
+    // Mevcut yıl - 1982 hesaplama
+    const currentYear = new Date().getFullYear();
+    const calculatedExperience = currentYear - 1982;
+    
     return {
       completedResidence: 0,
       experience: 0,
       builtArea: 0,
       targets: {
         completedResidence: 200,
-        experience: 40,
+        experience: calculatedExperience,
         builtArea: 50000,
       },
       hasAnimated: false,
