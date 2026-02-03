@@ -41,15 +41,6 @@
           <v-icon :size="mdAndUp ? 28 : 20">mdi-instagram</v-icon>
         </a>
       </div>
-      <!-- whatsapp -->
-      <div>
-        <a
-          href="https://api.whatsapp.com/send?phone=905358734476"
-          target="_blank"
-        >
-          <v-icon :size="mdAndUp ? 28 : 20">mdi-whatsapp</v-icon>
-        </a>
-      </div>
     </div>
   </section>
   <RequestForm ref="requestForm" />

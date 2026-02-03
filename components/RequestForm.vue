@@ -19,6 +19,7 @@
           iletebilirsiniz.
         </p>
         <v-form
+          ref="contactForm"
           id="contactForm"
           class="mt-5"
         >
@@ -210,21 +211,63 @@ export default {
     closeDialog() {
       this.dialog = false;
     },
-    submitForm() {
+    async submitForm() {
+      // Form validation kontrolü
+      const form = this.$refs.contactForm;
+      if (!form) return;
+
+      const { valid } = await form.validate();
+      if (!valid) {
+        return;
+      }
+
       this.loading = true;
       try {
-        this.createToastMessage(
-          "success",
-          "İşlem Başarılı",
-          "Kentsel Dönüşüm Talep Formu başarıyla gönderildi, size en kısa sürede dönüş yapacağız.",
-        );
-        this.loading = false;
+        const response = await $fetch("/api/urban-transformation-request", {
+          method: "POST",
+          body: {
+            fullName: this.model.fullName,
+            email: this.model.email,
+            phone: this.model.phone,
+            city: this.model.city,
+            state: this.model.state,
+            parcel: this.model.parcel,
+            subject: this.model.subject,
+          },
+        });
+
+        if (response.success) {
+          this.createToastMessage(
+            "success",
+            "İşlem Başarılı",
+            response.message ||
+              "Kentsel Dönüşüm Talep Formu başarıyla gönderildi, size en kısa sürede dönüş yapacağız.",
+          );
+          // Formu temizle
+          this.model = {
+            fullName: null,
+            email: null,
+            phone: null,
+            city: null,
+            state: null,
+            parcel: null,
+            subject: null,
+          };
+          // Dialog'u kapat
+          this.closeDialog();
+        }
       } catch (error) {
-        this.createToastMessage(
-          "error",
-          "İşlem Başarısız",
-          "Kentsel Dönüşüm Talep Formu gönderimi sırasında bir hata oluştu",
-        );
+        let errorMessage =
+          "Kentsel Dönüşüm Talep Formu gönderimi sırasında bir hata oluştu";
+
+        if (error.data?.errors && Array.isArray(error.data.errors)) {
+          errorMessage = error.data.errors.join(", ");
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        this.createToastMessage("error", "İşlem Başarısız", errorMessage);
+      } finally {
         this.loading = false;
       }
     },

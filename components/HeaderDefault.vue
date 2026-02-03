@@ -41,7 +41,7 @@
       :class="{ active: isMenuOpen }"
     >
       <div
-        class="contact-container d-none d-md-block"
+        class="contact-container d-none d-md-flex"
         :class="{ active: isMenuOpen }"
       >
         <span class="title">İLETİŞİM BİLGİLERİ</span>

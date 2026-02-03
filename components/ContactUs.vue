@@ -49,9 +49,9 @@
           <div class="contact-container">
             <h5 class="header">İLETİŞİM BİLGİLERİ</h5>
             <h6 class="sub-header">
-              İstanbul içi tüm ilçelere hizmet vermekteyiz.
+              Bahçelievler - Küçükçekmece - Bakırköy ilçelerine hizmet vermekteyiz.
             </h6>
-            <div class="phone">
+            <div class="address">
               <div class="title">
                 <v-icon size="20">mdi-map-marker</v-icon>
                 <span>Adres:</span>
@@ -67,13 +67,6 @@
                 <span>Email:</span>
               </div>
               <span class="description"> silyapiinsaat@gmail.com </span>
-            </div>
-            <div class="phone">
-              <div class="title">
-                <v-icon size="20">mdi-phone</v-icon>
-                <span>Telefon:</span>
-              </div>
-              <span class="description"> +90 535 873 44 76 </span>
             </div>
           </div>
         </v-col>

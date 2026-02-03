@@ -15,11 +15,11 @@
       class="mt-3"
     >
       <v-tab :value="0"
-        ><span class="text-caption font-weight-medium"> TÜM PROJELERİMİZ </span>
+        ><span class="text-caption font-weight-medium"> TAMAMLANAN PROJELER </span>
       </v-tab>
       <v-tab :value="1"
         ><span class="text-caption font-weight-medium">
-          DEVAM EDEN PROJELERİMİZ
+          DEVAM EDEN PROJELER
         </span>
       </v-tab>
     </v-tabs>
@@ -41,7 +41,10 @@
             >
               <div class="card-img-wrapper">
                 <div class="detail-icon">
-                  <i class="fa-solid fa-chevron-up"></i>
+                  <Icon
+                    icon="flowbite:expand-outline"
+                    color="white"
+                  />
                 </div>
                 <img
                   class="card-img"
@@ -145,11 +148,19 @@
                 />
               </v-btn>
             </div>
+            <!-- Proje Adı -->
             <div
               v-if="selectedProject"
-              class="w-100 project-detail-title mb-5"
+              class="w-100 project-detail-title mb-1"
             >
               {{ selectedProject.title.toUpperCase() }}
+            </div>
+            <!-- Proje Açık Adresi -->
+            <div
+              v-if="selectedProject"
+              class="w-100 project-detail-fulladdress mb-5"
+            >
+              {{ selectedProject.fullAddress }}
             </div>
             <div class="d-flex justify-space-between">
               <!-- Konum -->
