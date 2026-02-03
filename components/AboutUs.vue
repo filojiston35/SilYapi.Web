@@ -21,12 +21,12 @@
         </p>
         <br /><br />
         <p>
-          <span class="font-weight-medium">SİL YAPI İNŞAAT</span> olarak
-          maliklerin istek ve arzularını dikkate alarak projelerine uygun
-          şekilde yapılar yapmaya özen gösteriyor, özveriyle takip ediyor ve
-          uyguluyoruz. Bünyemizde bulunan mühendis ,mimar ve iç mimarlar ile her
-          zaman ekiplerimizin imalatlarını en iyi şekilde yapmaları için dikkat
-          ediyoruz.
+          <span class="font-weight-medium">SİL YAPI İNŞAAT</span> olarak,
+          maliklerin istek ve beklentilerini dikkate alarak projelere uygun
+          yapılar üretmeye özen gösteriyor; süreçleri titizlikle takip ediyor ve
+          uyguluyoruz. Bünyemizde görev yapan mühendis, mimar ve iç
+          mimarlarımızla birlikte, ekiplerimizin imalatları en yüksek kaliteyle
+          gerçekleştirmesini sağlıyoruz.
         </p>
       </div>
     </div>
