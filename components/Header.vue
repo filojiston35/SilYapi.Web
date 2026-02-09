@@ -109,11 +109,11 @@
       <li @click="gotoPage('/calistigimiz-markalar')">
         <span class="navigation-link"> Çalıştığımız Markalar </span>
       </li>
-      <li @click="gotoPage('/iletisim')">
-        <span class="navigation-link"> İletişim </span>
-      </li>
       <li @click="gotoPage('/kentsel-donusum-talep-formu')">
         <span class="navigation-link"> Kentsel Dönüşüm Talep Formu </span>
+      </li>
+      <li @click="gotoPage('/iletisim')">
+        <span class="navigation-link"> İletişim </span>
       </li>
     </ul>
   </div>
