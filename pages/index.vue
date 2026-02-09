@@ -89,34 +89,15 @@ export default {
   },
   data: () => {
     return {
-      // SPLASH SCREEN - YORUM SATIRINDA
-      // isSplashVisible: true,
-      // isSplashFading: false,
       timers: [],
     };
   },
   mounted() {
-    // SPLASH SCREEN - YORUM SATIRINDA
-    // this.handleWindowLoad = this.handleWindowLoad.bind(this);
-    // if (document.readyState === "complete") {
-    //   this.handleWindowLoad();
-    // } else {
-    //   window.addEventListener("load", this.handleWindowLoad);
-    // }
-    // Video'yu direkt oynat
     this.playShowcaseVideo();
   },
   beforeDestroy() {
-    // SPLASH SCREEN - YORUM SATIRINDA
-    // window.removeEventListener("load", this.handleWindowLoad);
     this.clearTimers();
-    // this.setBodyOverflow("auto");
   },
-  // watch: {
-  //   isSplashVisible(isVisible) {
-  //     this.setBodyOverflow(isVisible ? "hidden" : "auto");
-  //   },
-  // },
   methods: {
     setBodyOverflow(value) {
       document.body.style.overflowY = value;
@@ -144,20 +125,6 @@ export default {
           console.log("error playing", err);
         });
     },
-    // SPLASH SCREEN - YORUM SATIRINDA
-    // handleWindowLoad() {
-    //   this.playShowcaseVideo();
-
-    //   const fadeTimer = setTimeout(() => {
-    //     this.isSplashFading = true;
-    //     const hideTimer = setTimeout(() => {
-    //       this.isSplashVisible = false;
-    //       this.isSplashFading = false;
-    //     }, 500);
-    //     this.addTimer(hideTimer);
-    //   }, 1000);
-    //   this.addTimer(fadeTimer);
-    // },
   },
 };
 </script>

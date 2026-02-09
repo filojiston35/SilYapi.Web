@@ -10,7 +10,7 @@
       <h6 class="section-desc my-2">
         İletişim formumuzu doldurarak bizimle iletişime geçebilirsiniz.
       </h6>
-      <v-row>
+      <v-row :style="{ minHeight: isContactPage ? '85vh' : null }">
         <v-col
           cols="12"
           lg="6"
@@ -28,7 +28,16 @@
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
             <template #fallback>
-              <div style="width: 100%; height: 350px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+              <div
+                style="
+                  width: 100%;
+                  height: 350px;
+                  background: #f0f0f0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
                 <span>Harita yükleniyor...</span>
               </div>
             </template>
@@ -49,7 +58,8 @@
           <div class="contact-container">
             <h5 class="header">İLETİŞİM BİLGİLERİ</h5>
             <h6 class="sub-header">
-              Bahçelievler - Küçükçekmece - Bakırköy ilçelerine hizmet vermekteyiz.
+              Bahçelievler - Küçükçekmece - Bakırköy ilçelerine hizmet
+              vermekteyiz.
             </h6>
             <div class="address">
               <div class="title">
@@ -178,6 +188,12 @@ import rules from "@/mixins/rules";
 export default {
   name: "ContactUs",
   mixins: [rules],
+  props: {
+    isContactPage: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       contactModel: {

@@ -1,0 +1,28 @@
+<template>
+    <div
+     class="scroller"
+     id="scroller"
+   >
+     <Header />
+     <ContactUs isContactPage />
+     <Footer />
+   </div>
+ </template>
+ <script setup>
+ useHead({
+     title: 'İletişim',
+ })
+ </script>
+ <script>
+ import Header from "@/components/Header.vue";
+ import Footer from "@/components/Footer.vue";
+ import ContactUs from "@/components/ContactUs.vue";
+ export default {
+     name: 'İletişim',
+     data() {
+         return {
+             title: 'İletişim',
+         }
+     }
+ }
+</script>

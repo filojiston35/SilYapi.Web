@@ -13,3 +13,5 @@
 []      Projeler
 []      Projeyi Vercel a Bağla
 []      Domaini Yönlendir
+
+hizmetlerimize bir özellik daha ekle

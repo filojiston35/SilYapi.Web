@@ -45,9 +45,9 @@
       :class="{ active: isMenuOpen }"
     >
       <span class="title">İLETİŞİM BİLGİLERİ</span>
-      <span class="sub-title"
-        >İstanbul içi tüm ilçelere hizmet vermekteyiz.</span
-      >
+      <span class="sub-title">
+        Bahçelievler - Küçükçekmece - Bakırköy ilçelerine hizmet vermekteyiz.
+      </span>
       <div class="address">
         <div class="d-flex">
           <Icon
@@ -93,27 +93,24 @@
       class="navigation"
       :class="{ active: isMenuOpen }"
     >
-      <li @click="gotoIndexPage()">
+      <li @click="gotoPage('/')">
         <span class="navigation-link"> Anasayfa </span>
       </li>
-      <li @click="gotoAnchor('/#about-us')">
+      <li @click="gotoPage('/hakkimizda')">
         <span class="navigation-link"> Hakkımızda </span>
       </li>
 
-      <li @click="gotoAnchor('/#projects')">
+      <li @click="gotoPage('/projelerimiz')">
         <span class="navigation-link"> Projelerimiz </span>
       </li>
-      <li @click="gotoAnchor('/#services')">
+      <li @click="gotoPage('/hizmetlerimiz')">
         <span class="navigation-link"> Hizmetlerimiz </span>
       </li>
-      <li @click="gotoAnchor('/#brands')">
+      <li @click="gotoPage('/calistigimiz-markalar')">
         <span class="navigation-link"> Çalıştığımız Markalar </span>
       </li>
-      <li @click="gotoAnchor('/#contact-us')">
+      <li @click="gotoPage('/iletisim')">
         <span class="navigation-link"> İletişim </span>
-      </li>
-      <li @click="gotoAnchor('/#contact-us')">
-        <span class="navigation-link"> Bize Ulaşın </span>
       </li>
     </ul>
   </div>
@@ -132,7 +129,7 @@ export default {
     };
   },
   methods: {
-    gotoAnchor(anchor) {
+    gotoPage(anchor) {
       this.isMenuOpen = false;
       setTimeout(() => {
         this.$router.push(anchor);
