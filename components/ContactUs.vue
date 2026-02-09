@@ -97,6 +97,8 @@
               method="POST"
               action=""
               id="contactForm"
+              ref="contactForm"
+              @submit.prevent="submitForm"
             >
               <v-row>
                 <v-col
@@ -130,7 +132,7 @@
                   sm="6"
                 >
                   <v-text-field
-                    v-model="contactModel.name"
+                    v-model="contactModel.email"
                     label="Eposta Adresiniz"
                     variant="outlined"
                     density="comfortable"
@@ -143,7 +145,7 @@
                   sm="6"
                 >
                   <v-text-field
-                    v-model="contactModel.name"
+                    v-model="contactModel.phone"
                     label="Telefon Numaranız"
                     variant="outlined"
                     density="comfortable"
@@ -153,9 +155,9 @@
                 </v-col>
                 <v-col cols="12">
                   <v-textarea
-                    id="remark"
+                    id="message"
                     label="Mesajınız"
-                    v-model="contactModel.remark"
+                    v-model="contactModel.message"
                     variant="outlined"
                     density="comfortable"
                     counter="100"
@@ -169,6 +171,7 @@
                   <v-btn
                     color="primary"
                     type="submit"
+                    :loading="isSubmitting"
                     block
                   >
                     GÖNDER
@@ -184,10 +187,11 @@
   </section>
 </template>
 <script>
+import global from "@/mixins/global";
 import rules from "@/mixins/rules";
 export default {
   name: "ContactUs",
-  mixins: [rules],
+  mixins: [rules, global],
   props: {
     isContactPage: {
       type: Boolean,
@@ -202,9 +206,64 @@ export default {
         email: "",
         phone: "",
         message: "",
-        remark: "",
       },
+      isSubmitting: false,
     };
+  },
+  methods: {
+    async submitForm() {
+      // Form validation kontrolü
+      const form = this.$refs.contactForm;
+      console.log(form);
+      if (!form) return;
+
+      const { valid } = await form.validate();
+      if (!valid) {
+        return;
+      }
+      this.isSubmitting = true;
+      try {
+        const response = await $fetch("/api/contact-request", {
+          method: "POST",
+          body: {
+            name: this.contactModel.name,
+            lastName: this.contactModel.lastName,
+            email: this.contactModel.email,
+            phone: this.contactModel.phone,
+            message: this.contactModel.message,
+          },
+        });
+        if (response.success) {
+          this.createToastMessage(
+            "success",
+            "İşlem Başarılı",
+            response.message ||
+              "İletişim Formu başarıyla gönderildi, size en kısa sürede dönüş yapacağız.",
+          );
+          this.contactModel = {
+            name: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            message: "",
+          };
+          await this.$nextTick();
+          this.$refs.contactForm?.resetValidation?.();
+        }
+      } catch (error) {
+        let errorMessage = "İletişim Formu gönderimi sırasında bir hata oluştu";
+
+        if (error.data?.errors && Array.isArray(error.data.errors)) {
+          errorMessage = error.data.errors.join(", ");
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        this.createToastMessage("error", "İşlem Başarısız", errorMessage);
+      } finally {
+        this.isSubmitting = false;
+
+      }
+    },
   },
 };
 </script>
