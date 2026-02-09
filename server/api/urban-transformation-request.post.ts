@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import type { UrbanTransformationRequest } from "~/types/urban-transformation";
 
 export default defineEventHandler(async (event) => {
@@ -8,7 +9,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Method Not Allowed",
     });
   }
-
+  console.log("1");
   try {
     // Request body'yi al
     const body = await readBody<UrbanTransformationRequest>(event);
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
     } else if (body.fullName.length > 100) {
       errors.push("Ad Soyad en fazla 100 karakter olabilir");
     }
-
+    console.log("2");
     if (!body.email || body.email.trim().length === 0) {
       errors.push("E-posta alanı zorunludur");
     } else {
@@ -38,7 +39,7 @@ export default defineEventHandler(async (event) => {
     } else if (body.phone.length > 100) {
       errors.push("Telefon en fazla 100 karakter olabilir");
     }
-
+    console.log("3");
     if (!body.city || body.city.trim().length === 0) {
       errors.push("İl alanı zorunludur");
     } else if (body.city.length > 100) {
@@ -50,7 +51,7 @@ export default defineEventHandler(async (event) => {
     } else if (body.state.length > 100) {
       errors.push("İlçe en fazla 100 karakter olabilir");
     }
-
+    console.log("4");
     if (!body.parcel || body.parcel.trim().length === 0) {
       errors.push("Ada Parsel alanı zorunludur");
     } else if (body.parcel.length > 100) {
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event) => {
     } else if (body.subject.length > 200) {
       errors.push("Konu en fazla 200 karakter olabilir");
     }
-
+    console.log("5");
     // Eğer validation hataları varsa
     if (errors.length > 0) {
       throw createError({
@@ -73,22 +74,57 @@ export default defineEventHandler(async (event) => {
         },
       });
     }
+    console.log("6");
+    const config = useRuntimeConfig();
+    console.log("7");
+    console.log(config.smtp);
+    const { host, port, user, pass, from } = config.smtp ?? {};
+    console.log(host, port, user, pass, from);
+    if (
+      !host ||
+      !port ||
+      !user ||
+      !pass ||
+      !from
+    ) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: "Mail Configuration Error",
+        message: "Mail ayarları eksik.",
+      });
+    }
 
-    // Burada email gönderme, veritabanına kaydetme gibi işlemler yapılabilir
-    // Şimdilik sadece loglama yapıyoruz
-    console.log("Kentsel Dönüşüm Talep Formu:", {
-      fullName: body.fullName,
-      email: body.email,
-      phone: body.phone,
-      city: body.city,
-      state: body.state,
-      parcel: body.parcel,
-      subject: body.subject,
-      timestamp: new Date().toISOString(),
+    const transporter = nodemailer.createTransport({
+      host,
+      port: Number(port),
+      secure: Number(port) === 465,
+      auth: {
+        user,
+        pass,
+      },
     });
 
-    // TODO: Email gönderme servisi entegrasyonu
-    // TODO: Veritabanına kaydetme işlemi
+    const submittedAt = new Date().toISOString();
+    const textBody = [
+      "Kentsel Dönüşüm Talep Formu",
+      "---------------------------",
+      `Ad Soyad: ${body.fullName}`,
+      `E-posta: ${body.email}`,
+      `Telefon: ${body.phone}`,
+      `İl: ${body.city}`,
+      `İlçe: ${body.state}`,
+      `Ada Parsel: ${body.parcel}`,
+      `Konu: ${body.subject}`,
+      `Tarih: ${submittedAt}`,
+    ].join("\n");
+
+    await transporter.sendMail({
+      from,
+      to: body.email,
+      replyTo: body.email,
+      subject: `Kentsel Dönüşüm Talep Formu - ${body.fullName}`,
+      text: textBody,
+    });
 
     // Başarılı response
     return {
@@ -96,7 +132,7 @@ export default defineEventHandler(async (event) => {
       message: "Kentsel Dönüşüm Talep Formu başarıyla gönderildi. Size en kısa sürede dönüş yapacağız.",
       data: {
         id: Date.now().toString(), // Geçici ID, gerçek uygulamada veritabanından gelecek
-        submittedAt: new Date().toISOString(),
+        submittedAt,
       },
     };
   } catch (error: any) {
