@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import { readFile } from "fs/promises";
+import { join } from "path";
 import type {
   ContactRequestBody,
   ContactRequestResponse,
@@ -68,23 +70,17 @@ export default defineEventHandler(async (event) => {
     });
 
     const submittedAt = new Date().toISOString();
-    const textBody = [
-      "İletişim Formu",
-      "--------------",
-      `Ad: ${body.name}`,
-      `Soyad: ${body.lastName}`,
-      `E-posta: ${body.email}`,
-      `Telefon: ${body.phone}`,
-      `Mesaj: ${body.message}`,
-      `Tarih: ${submittedAt}`,
-    ].join("\n");
+    
+    // HTML mail template'ini oku
+    const htmlTemplatePath = join(process.cwd(), "data", "mail", "autoreply.html");
+    let htmlContent = await readFile(htmlTemplatePath, "utf-8");
 
     await transporter.sendMail({
       from,
       to: body.email,
-      replyTo: body.email,
+      replyTo: from,
       subject: `İletişim Formu`,
-      text: textBody,
+      html: htmlContent,
     });
 
     const response: ContactRequestResponse = {
