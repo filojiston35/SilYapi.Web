@@ -3,6 +3,7 @@
   <section
     id="services"
     class="services-section"
+    :class="{ 'is-page': isPage }"
   >
     <h4 class="section-title">HİZMETLERİMİZ</h4>
     <p class="section-desc my-2">
@@ -128,5 +129,11 @@
 <script>
 export default {
   name: "Services",
+  props: {
+    isPage: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>

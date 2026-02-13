@@ -3,6 +3,7 @@
   <section
     id="projects"
     class="projects-section"
+    :class="{ 'is-page': isPage }"
   >
     <h4 class="section-title">PROJELERİMİZ</h4>
     <p class="section-desc">
@@ -15,7 +16,9 @@
       class="mt-3"
     >
       <v-tab :value="0"
-        ><span class="text-caption font-weight-medium"> TAMAMLANAN PROJELER </span>
+        ><span class="text-caption font-weight-medium">
+          TAMAMLANAN PROJELER
+        </span>
       </v-tab>
       <v-tab :value="1"
         ><span class="text-caption font-weight-medium">
@@ -63,6 +66,7 @@
       </v-tabs-window-item>
       <v-tabs-window-item :value="1">
         <v-card
+          v-if="ongoingProjects.length == 0"
           elevation="0"
           min-height="500px"
           class="d-flex justify-center align-center"
@@ -75,6 +79,32 @@
               color="#2c304b"
             />
             <span>Devam eden projemiz bulunmamaktadır.</span>
+          </div>
+        </v-card>
+        <v-card
+          v-else
+          elevation="0"
+          min-height="500px"
+        >
+          <div class="ongoing-project-cards">
+            <div
+              v-for="project in ongoingProjects"
+              :key="project.id"
+              class="project-card"
+            >
+              <div class="card-img-wrapper">
+                <img
+                  alt=""
+                  :src="project.thumbnail"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div class="card-body">
+                <p class="card-title">{{ project.location }} - {{ project.startDate }}</p>
+                <h5 class="card-subtitle">{{ project.fullAddress }}</h5>
+              </div>
+            </div>
           </div>
         </v-card>
       </v-tabs-window-item>
@@ -237,12 +267,19 @@
 <script setup>
 import { useDisplay } from "vuetify";
 import { projects } from "@/data/projects";
+import { ongoingProjects } from "@/data/ongoingprojects";
 import { Icon } from "@iconify/vue";
 const { mdAndUp, smAndUp } = useDisplay();
 </script>
 <script>
 export default {
   name: "Projects",
+  props: {
+    isPage: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       dialog: false,

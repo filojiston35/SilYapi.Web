@@ -10,7 +10,7 @@
       <div class="column-2">{{ years }}</div>
       <div class="column-3">YIL</div>
     </div>
-    <div class="right-content">
+    <div class="right-content" :class="{ 'is-page': isPage }">
       <div class="column-1">HAKKIMIZDA</div>
       <div class="column-2">
         <p>
@@ -35,6 +35,12 @@
 <script>
 export default {
   name: "AboutUs",
+  props: {
+    isPage: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       years: 0,

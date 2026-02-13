@@ -200,4 +200,33 @@ export const projects = [
       "images/projects/project-14-3.jpeg",
     ],
   },
+  {
+    id: 15,
+    title: "Eser Apartmanı",
+    location: "Bahçelievler",
+    fullAddress:
+      "Bahçelievler İlçesi - Kocasinan Mahallesi",
+    startDate: "2006",
+    endDate: "2007",
+    thumbnail: "images/projects/project-15-1.jpeg",
+    images: [
+      "images/projects/project-15-1.jpeg",
+      "images/projects/project-15-2.jpeg",
+      "images/projects/project-15-3.jpeg",
+    ],
+  },
+  {
+    id: 16,
+    title: "Eser Apartmanı",
+    location: "Bahçelievler",
+    fullAddress:
+      "Bahçelievler İlçesi - Kocasinan Mahallesi",
+    startDate: "2003",
+    endDate: "2004",
+    thumbnail: "images/projects/project-16-1.jpeg",
+    images: [
+      "images/projects/project-16-1.jpeg",
+      "images/projects/project-16-2.jpeg",
+    ],
+  },
 ];

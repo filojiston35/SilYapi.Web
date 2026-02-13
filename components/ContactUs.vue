@@ -3,14 +3,15 @@
   <!-- CONTACT US -->
   <section
     id="contactus"
-    class="contactus-section"
+    class="contactus-section "
+    :class="{ 'is-page': isPage }"
   >
     <div>
       <h4 class="section-title">İLETİŞİM FORMU</h4>
       <h6 class="section-desc my-2">
         İletişim formumuzu doldurarak bizimle iletişime geçebilirsiniz.
       </h6>
-      <v-row :style="{ minHeight: isContactPage ? '85vh' : null }">
+      <v-row :style="{ minHeight: isPage ? '85vh' : null }">
         <v-col
           cols="12"
           lg="6"
@@ -193,7 +194,7 @@ export default {
   name: "ContactUs",
   mixins: [rules, global],
   props: {
-    isContactPage: {
+    isPage: {
       type: Boolean,
       default: false,
     },

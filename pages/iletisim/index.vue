@@ -4,7 +4,7 @@
      id="scroller"
    >
      <Header />
-     <ContactUs isContactPage />
+     <ContactUs :isPage="true" />
      <Footer />
    </div>
  </template>

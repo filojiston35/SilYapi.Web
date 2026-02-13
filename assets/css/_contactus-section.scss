@@ -107,6 +107,9 @@
 @media (max-width: 991px) {
   .contactus-section {
     padding: 40px 10px 10px 10px;
+    &.is-page {
+      padding: 100px 10px 10px 10px;
+    }
     .section-title {
       font-size: 20px;
     }
@@ -120,6 +123,9 @@
 @media (max-width: 576px) {
   .contactus-section {
     padding: 40px 10px 10px 10px;
+    &.is-page {
+      padding: 100px 10px 10px 10px;
+    }
     .section-title {
       font-size: 20px;
       padding: 0px 10px;

@@ -3,6 +3,7 @@
   <section
     id="brands"
     class="brands-section"
+    :class="{ 'is-page': isPage }"
   >
     <h4 class="section-title">MARKALAR</h4>
     <p class="section-desc my-2">
@@ -29,6 +30,12 @@
 import { brands } from "@/data/brands";
 export default {
   name: "Brands",
+  props: {
+    isPage: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       brands: brands,

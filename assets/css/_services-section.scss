@@ -51,6 +51,9 @@
 @media (max-width: 991px) {
   .services-section {
     padding: 40px 10px 10px 10px;
+    &.is-page {
+      padding: 100px 10px 10px 10px;
+    }
     .service-card {
         .card-title {
             font-size: .9rem; 
@@ -72,6 +75,9 @@
 @media (max-width: 576px) {
   .services-section {
     padding: 40px 5px 5px 10px;
+    &.is-page {
+      padding: 100px 5px 5px 10px;
+    }
     .section-title {
       font-size: 20px;
       padding: 0px 10px;

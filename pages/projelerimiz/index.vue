@@ -4,7 +4,7 @@
     id="scroller"
   >
     <Header />
-    <Projects />
+    <Projects :isPage="true" />
     <Footer />
   </div>
 </template>

@@ -4,7 +4,7 @@
      id="scroller"
    >
      <Header />
-     <Services />
+     <Services :isPage="true" />
      <Footer />
    </div>
  </template>
@@ -19,6 +19,12 @@
  import Services from "@/components/Services.vue";
  export default {
      name: 'Hizmetlerimiz',
+     props: {
+        isPage: {
+            type: Boolean,
+            default: false,
+        }
+     },
      data() {
          return {
              title: 'Hizmetlerimiz',

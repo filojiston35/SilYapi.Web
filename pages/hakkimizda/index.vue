@@ -4,7 +4,7 @@
     id="scroller"
   >
     <Header />
-    <AboutUs />
+    <AboutUs :isPage="true" />
     <Footer />
   </div>
 </template>
