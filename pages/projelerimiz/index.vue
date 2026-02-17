@@ -11,6 +11,9 @@
 <script setup>
 useHead({
   title: "Projelerimiz",
+  meta: [
+    { name: "description", content: "" },
+  ],
 });
 </script>
 <script>

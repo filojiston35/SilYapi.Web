@@ -67,7 +67,7 @@
     <!-- SCROLLER END -->
   </div>
 </template>
-<script>
+<script setup>
 import HeaderDefault from "@/components/HeaderDefault.vue";
 import AboutUs from "@/components/AboutUs.vue";
 import Brands from "@/components/Brands.vue";
@@ -79,14 +79,17 @@ import Intro from "@/components/Intro.vue";
 import Projects from "@/components/Projects.vue";
 import Services from "@/components/Services.vue";
 import ContactUs from "@/components/ContactUs.vue";
-
+useHead({
+    title: 'Sil Yapı İnşaat',
+    titleTemplate: '',
+    meta: [
+        { name: "description", content: "" },
+    ],
+})
+</script>
+<script>
 export default {
   layout: "default",
-  setup() {
-    useHead({
-      title: "Anasayfa",
-    });
-  },
   data: () => {
     return {
       timers: [],
@@ -94,6 +97,10 @@ export default {
   },
   mounted() {
     this.playShowcaseVideo();
+    // Title'ı manuel olarak set et (cache sorunları için)
+    if (typeof document !== 'undefined') {
+      document.title = 'Sil Yapı İnşaat';
+    }
   },
   beforeDestroy() {
     this.clearTimers();

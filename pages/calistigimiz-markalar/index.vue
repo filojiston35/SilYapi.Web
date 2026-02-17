@@ -9,9 +9,12 @@
    </div>
  </template>
  <script setup>
- useHead({
-     title: 'Çalıştığımız Markalar',
- })
+useHead({
+    title: 'Çalıştığımız Markalar',
+    meta: [
+        { name: "description", content: "" },
+    ],
+})
  </script>
  <script>
  import Header from "@/components/Header.vue";

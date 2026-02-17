@@ -10,7 +10,10 @@
 </template>
 <script setup>
 useHead({
-    title: 'Hakkimizda',
+    title: 'Hakkımızda',
+    meta: [
+        { name: "description", content: "" },
+    ],
 })
 </script>
 <script>
