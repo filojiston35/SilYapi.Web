@@ -1,10 +1,12 @@
 import nodemailer from "nodemailer";
-import { readFile } from "fs/promises";
-import { join } from "path";
 import type {
   ContactRequestBody,
   ContactRequestResponse,
 } from "~/types/contact-request";
+import {
+  autoreplyTemplate,
+  contactNotificationTemplate,
+} from "~/server/utils/mail-templates";
 
 export default defineEventHandler(async (event) => {
   if (event.method !== "POST") {
@@ -91,12 +93,11 @@ export default defineEventHandler(async (event) => {
     }
 
     const submittedAt = new Date().toISOString();
-    const mailDir = join(process.cwd(), "data", "mail");
 
     // Kullanıcıya otomatik yanıt (autoreply)
     try {
       console.log("[contact-request] Autoreply gönderiliyor, to:", body.email);
-      const autoreplyHtml = await readFile(join(mailDir, "autoreply.html"), "utf-8");
+      const autoreplyHtml = autoreplyTemplate;
       const autoreplyResult = await transporter.sendMail({
         from: fromAddress,
         to: body.email,
@@ -127,11 +128,7 @@ export default defineEventHandler(async (event) => {
           console.warn("[contact-request] NOTIFICATION_EMAIL formu dolduran kişiyle aynı; bildirim yine de şirket adresine gidecek:", notificationRecipient);
         }
         console.log("[contact-request] Bildirim maili gönderiliyor, to (şirket):", notificationRecipient);
-        const notificationHtmlRaw = await readFile(
-          join(mailDir, "contact-notification.html"),
-          "utf-8"
-        );
-        const notificationHtml = notificationHtmlRaw
+        const notificationHtml = contactNotificationTemplate
           .replace(/\{\{isim\}\}/g, body.name.trim())
           .replace(/\{\{soyisim\}\}/g, body.lastName.trim())
           .replace(/\{\{email\}\}/g, body.email.trim())

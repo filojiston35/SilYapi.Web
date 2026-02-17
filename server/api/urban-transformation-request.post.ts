@@ -1,10 +1,12 @@
 import nodemailer from "nodemailer";
-import { readFile } from "fs/promises";
-import { join } from "path";
 import type {
   UrbanTransformationRequest,
   UrbanTransformationResponse,
 } from "~/types/urban-transformation";
+import {
+  urbanTransformationAutoreplyTemplate,
+  urbanTransformationNotificationTemplate,
+} from "~/server/utils/mail-templates";
 
 export default defineEventHandler(async (event) => {
   // Sadece POST isteklerine izin ver
@@ -141,7 +143,6 @@ export default defineEventHandler(async (event) => {
     }
 
     const submittedAt = new Date().toISOString();
-    const mailDir = join(process.cwd(), "data", "mail");
 
     // Kullanıcıya otomatik yanıt (autoreply)
     try {
@@ -149,10 +150,7 @@ export default defineEventHandler(async (event) => {
         "[urban-transformation-request] Autoreply gönderiliyor, to:",
         body.email,
       );
-      const autoreplyHtml = await readFile(
-        join(mailDir, "urban-transformation-autoreply.html"),
-        "utf-8",
-      );
+      const autoreplyHtml = urbanTransformationAutoreplyTemplate;
       const autoreplyResult = await transporter.sendMail({
         from: fromAddress,
         to: body.email,
@@ -198,12 +196,8 @@ export default defineEventHandler(async (event) => {
           "[urban-transformation-request] Bildirim maili gönderiliyor, to (şirket):",
           notificationRecipient,
         );
-        const notificationHtmlRaw = await readFile(
-          join(mailDir, "urban-transformation-notification.html"),
-          "utf-8",
-        );
         // Template placeholder'larını doldur
-        const notificationHtml = notificationHtmlRaw
+        const notificationHtml = urbanTransformationNotificationTemplate
           .replace(/\{\{ad_soyad\}\}/g, body.fullName.trim())
           .replace(/\{\{eposta\}\}/g, body.email.trim())
           .replace(/\{\{telefon\}\}/g, body.phone.trim())
