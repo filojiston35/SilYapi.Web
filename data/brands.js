@@ -116,39 +116,44 @@ export const brands = [
     name: "VİKO",
   },
   {
-    id: 29,
+    id: 30,
     name: "Arçelik",
   },
   {
-    id: 29,
+    id: 31,
     name: "Termoteknik",
   },
   {
-    id: 29,
+    id: 32,
     name: "Terraclick",
   },
   {
-    id: 29,
-    name: "Tezdoor",
-  },
-  {
-    id: 30,
-    name: "Rehau",
-  },
-  {
-    id: 31,
-    name: "Franke",
-  },
-  {
-    id: 32,
-    name: "Grohe",
-  },
-  {
     id: 33,
-    name: "Creavit",
+    name: "Jotun",
   },
   {
     id: 34,
+    name: "Rehau",
+  },
+  {
+    id: 35,
+    name: "Franke",
+  },
+  {
+    id: 36,
+    name: "Grohe",
+  },
+  {
+    id: 37,
+    name: "Creavit",
+  },
+  {
+    id: 38,
     name: "Kütahya Seramik",
   },
+  {
+    id: 39,
+    name: "Artema",
+  },
+
 ];

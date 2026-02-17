@@ -10,6 +10,7 @@
       alt=""
       @click="gotoPage('/')"
     />
+    © 2026 Sil Yapı İnşaat Tüm Hakları Saklıdır.
   </footer>
 </template>
 <script>
