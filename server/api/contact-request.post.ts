@@ -56,6 +56,7 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const { host, port, user, pass, from } = config.smtp ?? {};
     const notificationEmail = config.notificationEmail as string | undefined;
+    const inboxBcc = (config.inboxBcc as string | undefined)?.trim() || undefined;
 
     console.log("[contact-request] SMTP host:", host, "port:", port, "from:", from);
     console.log("[contact-request] NOTIFICATION_EMAIL:", notificationEmail ? `${notificationEmail.slice(0, 3)}***` : "(boş)");
@@ -99,6 +100,7 @@ export default defineEventHandler(async (event) => {
         replyTo: from,
         subject: `İletişim Formu`,
         html: autoreplyHtml,
+        ...(inboxBcc && { bcc: inboxBcc }),
       });
       console.log("[contact-request] Autoreply sonuç:", {
         messageId: autoreplyResult.messageId,
@@ -114,10 +116,14 @@ export default defineEventHandler(async (event) => {
       throw autoreplyErr;
     }
 
-    // Şirket içi bildirim (contact-notification)
-    if (notificationEmail && notificationEmail.trim()) {
+    // Şirket içi bildirim (contact-notification) — sadece NOTIFICATION_EMAIL adresine, formu dolduran kişiye değil
+    const notificationRecipient = notificationEmail?.trim();
+    if (notificationRecipient) {
       try {
-        console.log("[contact-request] Bildirim maili gönderiliyor, to:", notificationEmail.trim());
+        if (notificationRecipient.toLowerCase() === body.email.trim().toLowerCase()) {
+          console.warn("[contact-request] NOTIFICATION_EMAIL formu dolduran kişiyle aynı; bildirim yine de şirket adresine gidecek:", notificationRecipient);
+        }
+        console.log("[contact-request] Bildirim maili gönderiliyor, to (şirket):", notificationRecipient);
         const notificationHtmlRaw = await readFile(
           join(mailDir, "contact-notification.html"),
           "utf-8"
@@ -130,10 +136,11 @@ export default defineEventHandler(async (event) => {
           .replace(/\{\{mesaj\}\}/g, body.message.trim());
         const notifResult = await transporter.sendMail({
           from,
-          to: notificationEmail.trim(),
+          to: notificationRecipient,
           replyTo: body.email,
           subject: `Yeni İletişim Formu Mesajı - ${body.name} ${body.lastName}`,
           html: notificationHtml,
+          ...(inboxBcc && { bcc: inboxBcc }),
         });
         console.log("[contact-request] Bildirim sonuç:", {
           messageId: notifResult.messageId,

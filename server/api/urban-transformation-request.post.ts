@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import { readFile } from "fs/promises";
+import { join } from "path";
 import type {
   UrbanTransformationRequest,
   UrbanTransformationResponse,
@@ -72,11 +74,39 @@ export default defineEventHandler(async (event) => {
         },
       });
     }
+
+    console.log(
+      "[urban-transformation-request] Form doğrulandı, e-posta:",
+      body.email,
+    );
+
     const config = useRuntimeConfig();
-    console.log(config.smtp);
     const { host, port, user, pass, from } = config.smtp ?? {};
-    console.log(host, port, user, pass, from);
+    const notificationEmail = config.notificationEmail as string | undefined;
+    const inboxBcc =
+      (config.inboxBcc as string | undefined)?.trim() || undefined;
+
+    console.log(
+      "[urban-transformation-request] SMTP host:",
+      host,
+      "port:",
+      port,
+      "from:",
+      from,
+    );
+    console.log(
+      "[urban-transformation-request] NOTIFICATION_EMAIL:",
+      notificationEmail ? `${notificationEmail.slice(0, 3)}***` : "(boş)",
+    );
+
     if (!host || !port || !user || !pass || !from) {
+      console.error("[urban-transformation-request] Eksik SMTP ayarı:", {
+        host: !!host,
+        port: !!port,
+        user: !!user,
+        pass: !!pass,
+        from: !!from,
+      });
       throw createError({
         statusCode: 500,
         statusMessage: "Mail Configuration Error",
@@ -84,6 +114,8 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // Not: SMTP sunucusu mesajı kabul etse bile (accepted/rejected OK) teslimat
+    // sağlayıcı tarafında (spam, SPF/DKIM, relay) başarısız olabilir.
     const transporter = nodemailer.createTransport({
       host,
       port: Number(port),
@@ -94,27 +126,120 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    const submittedAt = new Date().toISOString();
-    const textBody = [
-      "Kentsel Dönüşüm Talep Formu",
-      "---------------------------",
-      `Ad Soyad: ${body.fullName}`,
-      `E-posta: ${body.email}`,
-      `Telefon: ${body.phone}`,
-      `İl: ${body.city}`,
-      `İlçe: ${body.state}`,
-      `Ada Parsel: ${body.parcel}`,
-      `Konu: ${body.subject}`,
-      `Tarih: ${submittedAt}`,
-    ].join("\n");
+    try {
+      await transporter.verify();
+      console.log("[urban-transformation-request] SMTP bağlantısı doğrulandı.");
+    } catch (verifyErr: any) {
+      console.error(
+        "[urban-transformation-request] SMTP verify hatası:",
+        verifyErr?.message ?? verifyErr,
+      );
+      throw verifyErr;
+    }
 
-    await transporter.sendMail({
-      from,
-      to: body.email,
-      replyTo: body.email,
-      subject: `Kentsel Dönüşüm Talep Formu`,
-      text: textBody,
-    });
+    const submittedAt = new Date().toISOString();
+    const mailDir = join(process.cwd(), "data", "mail");
+
+    // Kullanıcıya otomatik yanıt (autoreply)
+    try {
+      console.log(
+        "[urban-transformation-request] Autoreply gönderiliyor, to:",
+        body.email,
+      );
+      const autoreplyHtml = await readFile(
+        join(mailDir, "urban-transformation-autoreply.html"),
+        "utf-8",
+      );
+      const autoreplyResult = await transporter.sendMail({
+        from,
+        to: body.email,
+        replyTo: from,
+        subject: `Kentsel Dönüşüm Talep Formu`,
+        html: autoreplyHtml,
+        ...(inboxBcc && { bcc: inboxBcc }),
+      });
+      console.log("[urban-transformation-request] Autoreply sonuç:", {
+        messageId: autoreplyResult.messageId,
+        accepted: autoreplyResult.accepted,
+        rejected: autoreplyResult.rejected,
+        response: autoreplyResult.response,
+      });
+      if (autoreplyResult.rejected?.length) {
+        console.warn(
+          "[urban-transformation-request] Autoreply reddedilen adresler:",
+          autoreplyResult.rejected,
+        );
+      }
+    } catch (autoreplyErr: any) {
+      console.error(
+        "[urban-transformation-request] Autoreply gönderilemedi:",
+        autoreplyErr?.message ?? autoreplyErr,
+      );
+      throw autoreplyErr;
+    }
+
+    // Şirket içi bildirim (contact-notification) — sadece NOTIFICATION_EMAIL adresine, formu dolduran kişiye değil
+    const notificationRecipient = notificationEmail?.trim();
+    if (notificationRecipient) {
+      try {
+        if (
+          notificationRecipient.toLowerCase() ===
+          body.email.trim().toLowerCase()
+        ) {
+          console.warn(
+            "[urban-transformation-request] NOTIFICATION_EMAIL formu dolduran kişiyle aynı; bildirim yine de şirket adresine gidecek:",
+            notificationRecipient,
+          );
+        }
+        console.log(
+          "[urban-transformation-request] Bildirim maili gönderiliyor, to (şirket):",
+          notificationRecipient,
+        );
+        const notificationHtmlRaw = await readFile(
+          join(mailDir, "urban-transformation-notification.html"),
+          "utf-8",
+        );
+        // Template placeholder'larını doldur
+        const notificationHtml = notificationHtmlRaw
+          .replace(/\{\{ad_soyad\}\}/g, body.fullName.trim())
+          .replace(/\{\{eposta\}\}/g, body.email.trim())
+          .replace(/\{\{telefon\}\}/g, body.phone.trim())
+          .replace(/\{\{il\}\}/g, body.city.trim())
+          .replace(/\{\{ilce\}\}/g, body.state.trim())
+          .replace(/\{\{ada_parsel\}\}/g, body.parcel.trim())
+          .replace(/\{\{konu\}\}/g, body.subject.trim());
+        const notifResult = await transporter.sendMail({
+          from,
+          to: notificationRecipient,
+          replyTo: body.email,
+          subject: `Yeni Kentsel Dönüşüm Talep Formu - ${body.fullName}`,
+          html: notificationHtml,
+          ...(inboxBcc && { bcc: inboxBcc }),
+        });
+        console.log("[urban-transformation-request] Bildirim sonuç:", {
+          messageId: notifResult.messageId,
+          accepted: notifResult.accepted,
+          rejected: notifResult.rejected,
+          response: notifResult.response,
+        });
+        if (notifResult.rejected?.length) {
+          console.warn(
+            "[urban-transformation-request] Bildirim reddedilen adresler:",
+            notifResult.rejected,
+          );
+        }
+      } catch (notifErr: any) {
+        console.error(
+          "[urban-transformation-request] Bildirim maili gönderilemedi:",
+          notifErr?.message ?? notifErr,
+        );
+        throw notifErr;
+      }
+    } else {
+      console.log(
+        "[urban-transformation-request] NOTIFICATION_EMAIL boş, bildirim atılmadı.",
+      );
+    }
 
     // Başarılı response
     const response: UrbanTransformationResponse = {
@@ -134,7 +259,17 @@ export default defineEventHandler(async (event) => {
     }
 
     // Beklenmeyen hatalar
-    console.error("Kentsel Dönüşüm Talep Formu Hatası:", error);
+    console.error(
+      "[urban-transformation-request] Kentsel Dönüşüm Talep Formu Hatası:",
+      error?.message ?? error,
+    );
+    if (error?.response)
+      console.error(
+        "[urban-transformation-request] SMTP response:",
+        error.response,
+      );
+    if (error?.stack)
+      console.error("[urban-transformation-request] Stack:", error.stack);
     throw createError({
       statusCode: 500,
       statusMessage: "Internal Server Error",

@@ -16,6 +16,7 @@ export default defineNuxtConfig({
       to: process.env.SMTP_TO ?? "",
     },
     notificationEmail: process.env.NOTIFICATION_EMAIL ?? "",
+    inboxBcc: process.env.INBOX_BCC ?? "",
   },
   build: {
     transpile: ["vuetify"],
