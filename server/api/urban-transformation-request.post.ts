@@ -81,10 +81,13 @@ export default defineEventHandler(async (event) => {
     );
 
     const config = useRuntimeConfig();
-    const { host, port, user, pass, from } = config.smtp ?? {};
+    const { host, port, user, pass, from, fromName } = config.smtp ?? {};
     const notificationEmail = config.notificationEmail as string | undefined;
     const inboxBcc =
       (config.inboxBcc as string | undefined)?.trim() || undefined;
+    
+    // Gönderici adını formatla: "İsim <email>" veya sadece email
+    const fromAddress = fromName && from ? `"${fromName}" <${from}>` : from;
 
     console.log(
       "[urban-transformation-request] SMTP host:",
@@ -151,7 +154,7 @@ export default defineEventHandler(async (event) => {
         "utf-8",
       );
       const autoreplyResult = await transporter.sendMail({
-        from,
+        from: fromAddress,
         to: body.email,
         replyTo: from,
         subject: `Kentsel Dönüşüm Talep Formu`,
@@ -209,7 +212,7 @@ export default defineEventHandler(async (event) => {
           .replace(/\{\{ada_parsel\}\}/g, body.parcel.trim())
           .replace(/\{\{konu\}\}/g, body.subject.trim());
         const notifResult = await transporter.sendMail({
-          from,
+          from: fromAddress,
           to: notificationRecipient,
           replyTo: body.email,
           subject: `Yeni Kentsel Dönüşüm Talep Formu - ${body.fullName}`,

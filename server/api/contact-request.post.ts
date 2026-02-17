@@ -54,9 +54,12 @@ export default defineEventHandler(async (event) => {
     console.log("[contact-request] Form doğrulandı, e-posta:", body.email);
 
     const config = useRuntimeConfig();
-    const { host, port, user, pass, from } = config.smtp ?? {};
+    const { host, port, user, pass, from, fromName } = config.smtp ?? {};
     const notificationEmail = config.notificationEmail as string | undefined;
     const inboxBcc = (config.inboxBcc as string | undefined)?.trim() || undefined;
+    
+    // Gönderici adını formatla: "İsim <email>" veya sadece email
+    const fromAddress = fromName && from ? `"${fromName}" <${from}>` : from;
 
     console.log("[contact-request] SMTP host:", host, "port:", port, "from:", from);
     console.log("[contact-request] NOTIFICATION_EMAIL:", notificationEmail ? `${notificationEmail.slice(0, 3)}***` : "(boş)");
@@ -95,7 +98,7 @@ export default defineEventHandler(async (event) => {
       console.log("[contact-request] Autoreply gönderiliyor, to:", body.email);
       const autoreplyHtml = await readFile(join(mailDir, "autoreply.html"), "utf-8");
       const autoreplyResult = await transporter.sendMail({
-        from,
+        from: fromAddress,
         to: body.email,
         replyTo: from,
         subject: `İletişim Formu`,
@@ -135,7 +138,7 @@ export default defineEventHandler(async (event) => {
           .replace(/\{\{telefon\}\}/g, body.phone.trim())
           .replace(/\{\{mesaj\}\}/g, body.message.trim());
         const notifResult = await transporter.sendMail({
-          from,
+          from: fromAddress,
           to: notificationRecipient,
           replyTo: body.email,
           subject: `Yeni İletişim Formu Mesajı - ${body.name} ${body.lastName}`,
