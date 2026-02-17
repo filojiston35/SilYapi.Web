@@ -11,9 +11,6 @@
 <script setup>
 useHead({
     title: 'Hakkımızda',
-    meta: [
-        { name: "description", content: "" },
-    ],
 })
 </script>
 <script>

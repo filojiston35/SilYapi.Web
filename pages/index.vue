@@ -80,11 +80,7 @@ import Projects from "@/components/Projects.vue";
 import Services from "@/components/Services.vue";
 import ContactUs from "@/components/ContactUs.vue";
 useHead({
-    title: 'Sil Yapı İnşaat',
-    titleTemplate: '',
-    meta: [
-        { name: "description", content: "" },
-    ],
+    title: 'Anasayfa',
 })
 </script>
 <script>

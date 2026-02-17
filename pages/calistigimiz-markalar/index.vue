@@ -11,9 +11,6 @@
  <script setup>
 useHead({
     title: 'Çalıştığımız Markalar',
-    meta: [
-        { name: "description", content: "" },
-    ],
 })
  </script>
  <script>

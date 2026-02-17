@@ -179,10 +179,6 @@
 import rules from "@/mixins/rules";
 import global from "@/mixins/global";
 import { useDisplay } from "vuetify";
-const { mdAndUp } = useDisplay();
-useHead({
-  title: "Kentsel Dönüşüm Talep Formu",
-});
 </script>
 <script>
 export default {
