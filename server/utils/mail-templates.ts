@@ -85,7 +85,7 @@ export const autoreplyTemplate = `<!doctype html>
             <tr>
               <td style="padding:12px 6px; text-align:center;">
                 <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:16px; color:#94a3b8;">
-                  © [Yıl] [Firma Adı]. Tüm hakları saklıdır.
+                  © 2026 Sil Yapı İnşaat. Tüm hakları saklıdır.
                 </div>
               </td>
             </tr>
@@ -326,7 +326,7 @@ export const urbanTransformationAutoreplyTemplate = `<!doctype html>
             <tr>
               <td style="padding:12px 6px; text-align:center;">
                 <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:16px; color:#94a3b8;">
-                  © [Yıl] [Firma Adı]. Tüm hakları saklıdır.
+                  © 2026 Sil Yapı İnşaat. Tüm hakları saklıdır.
                 </div>
               </td>
             </tr>

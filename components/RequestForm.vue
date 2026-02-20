@@ -175,16 +175,30 @@
     </v-card>
   </v-dialog>
 </template>
-<script setup>
+<script>
+import { useReCaptcha } from "vue-recaptcha-v3";
 import rules from "@/mixins/rules";
 import global from "@/mixins/global";
-import { useDisplay } from "vuetify";
-</script>
-<script>
+
 export default {
   layout: "default",
   name: "RequestForm",
   mixins: [global, rules],
+  setup() {
+    let executeRecaptcha = null;
+    let recaptchaLoaded = null;
+    if (import.meta.client) {
+      try {
+        const api = useReCaptcha();
+        executeRecaptcha = api.executeRecaptcha;
+        recaptchaLoaded = api.recaptchaLoaded;
+      } catch (_) {
+        executeRecaptcha = null;
+        recaptchaLoaded = null;
+      }
+    }
+    return { executeRecaptcha, recaptchaLoaded };
+  },
   data() {
     return {
       dialog: false,
@@ -208,16 +222,41 @@ export default {
       this.dialog = false;
     },
     async submitForm() {
-      // Form validation kontrolü
       const form = this.$refs.contactForm;
       if (!form) return;
 
       const { valid } = await form.validate();
-      if (!valid) {
+      if (!valid) return;
+
+      this.loading = true;
+      let recaptchaToken = null;
+      try {
+        if (this.recaptchaLoaded && typeof this.recaptchaLoaded === "function") {
+          await this.recaptchaLoaded();
+        }
+        if (this.executeRecaptcha && typeof this.executeRecaptcha === "function") {
+          recaptchaToken = await this.executeRecaptcha("requestForm");
+        }
+      } catch (recaptchaErr) {
+        this.createToastMessage(
+          "error",
+          "Güvenlik doğrulaması",
+          "Güvenlik doğrulaması alınamadı. Lütfen sayfayı yenileyip tekrar deneyin.",
+        );
+        this.loading = false;
         return;
       }
 
-      this.loading = true;
+      if (!recaptchaToken) {
+        this.createToastMessage(
+          "error",
+          "Güvenlik doğrulaması",
+          "reCAPTCHA henüz yüklenmedi. Lütfen birkaç saniye bekleyip tekrar deneyin.",
+        );
+        this.loading = false;
+        return;
+      }
+
       try {
         const response = await $fetch("/api/urban-transformation-request", {
           method: "POST",
@@ -229,6 +268,7 @@ export default {
             state: this.model.state,
             parcel: this.model.parcel,
             subject: this.model.subject,
+            recaptchaToken: recaptchaToken ?? undefined,
           },
         });
 

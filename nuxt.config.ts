@@ -1,4 +1,10 @@
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
+
+// Client: token üretmek için siteKey (recaptcha modülü + runtimeConfig.public)
+// Server: doğrulama için secretKey (runtimeConfig.recaptcha.secretKey)
+const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY ?? "";
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY ?? "";
+
 export default defineNuxtConfig({
   // ön yüklemeyi devre dışı bırak
   typescript: {
@@ -7,6 +13,15 @@ export default defineNuxtConfig({
   // devtools: { enabled: true },
   ssr: true,
   runtimeConfig: {
+    recaptcha: {
+      siteKey: recaptchaSiteKey,
+      secretKey: recaptchaSecretKey,
+    },
+    public: {
+      recaptcha: {
+        siteKey: recaptchaSiteKey,
+      },
+    },
     smtp: {
       host: process.env.SMTP_HOST ?? "",
       port: process.env.SMTP_PORT ?? "",
@@ -99,7 +114,7 @@ export default defineNuxtConfig({
     ],
   },
 
-  plugins: [{ src: "~/plugins/moment.ts" }],
+  plugins: ["~/plugins/moment.ts", "~/plugins/recaptcha.client.ts"],
 
   css: [
     "~/assets/css/index.scss",

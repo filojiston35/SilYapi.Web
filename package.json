@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@nuxtjs/recaptcha": "^1.1.2",
     "@pinia/nuxt": "^0.11.2",
     "devtools-detect": "^4.0.2",
     "highlight.js": "^11.10.0",
@@ -24,6 +25,7 @@
     "vue-currency-input": "^3.1.0",
     "vue-json-pretty": "^2.4.0",
     "vue-pdf-embed": "^2.1.1",
+    "vue-recaptcha-v3": "^2.0.1",
     "vue-router": "^4.4.5",
     "vue3-toastify": "^0.2.4"
   },

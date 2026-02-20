@@ -188,8 +188,10 @@
   </section>
 </template>
 <script>
+import { useReCaptcha } from "vue-recaptcha-v3";
 import global from "@/mixins/global";
 import rules from "@/mixins/rules";
+
 export default {
   name: "ContactUs",
   mixins: [rules, global],
@@ -198,6 +200,21 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  setup() {
+    let executeRecaptcha = null;
+    let recaptchaLoaded = null;
+    if (import.meta.client) {
+      try {
+        const api = useReCaptcha();
+        executeRecaptcha = api.executeRecaptcha;
+        recaptchaLoaded = api.recaptchaLoaded;
+      } catch (_) {
+        executeRecaptcha = null;
+        recaptchaLoaded = null;
+      }
+    }
+    return { executeRecaptcha, recaptchaLoaded };
   },
   data() {
     return {
@@ -213,16 +230,41 @@ export default {
   },
   methods: {
     async submitForm() {
-      // Form validation kontrolü
       const form = this.$refs.contactForm;
-      console.log(form);
       if (!form) return;
 
       const { valid } = await form.validate();
-      if (!valid) {
+      if (!valid) return;
+
+      this.isSubmitting = true;
+      let recaptchaToken = null;
+      try {
+        if (this.recaptchaLoaded && typeof this.recaptchaLoaded === "function") {
+          await this.recaptchaLoaded();
+        }
+        if (this.executeRecaptcha && typeof this.executeRecaptcha === "function") {
+          recaptchaToken = await this.executeRecaptcha("contactForm");
+        }
+      } catch (recaptchaErr) {
+        this.createToastMessage(
+          "error",
+          "Güvenlik doğrulaması",
+          "Güvenlik doğrulaması alınamadı. Lütfen sayfayı yenileyip tekrar deneyin.",
+        );
+        this.isSubmitting = false;
         return;
       }
-      this.isSubmitting = true;
+
+      if (!recaptchaToken) {
+        this.createToastMessage(
+          "error",
+          "Güvenlik doğrulaması",
+          "reCAPTCHA henüz yüklenmedi. Lütfen birkaç saniye bekleyip tekrar deneyin.",
+        );
+        this.isSubmitting = false;
+        return;
+      }
+
       try {
         const response = await $fetch("/api/contact-request", {
           method: "POST",
@@ -232,6 +274,7 @@ export default {
             email: this.contactModel.email,
             phone: this.contactModel.phone,
             message: this.contactModel.message,
+            recaptchaToken: recaptchaToken ?? undefined,
           },
         });
         if (response.success) {
@@ -262,7 +305,6 @@ export default {
         this.createToastMessage("error", "İşlem Başarısız", errorMessage);
       } finally {
         this.isSubmitting = false;
-
       }
     },
   },

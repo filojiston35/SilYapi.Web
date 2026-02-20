@@ -53,21 +53,110 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    const config = useRuntimeConfig();
+    const recaptchaSecret = (
+      config.recaptcha as { secretKey?: string } | undefined
+    )?.secretKey?.trim();
+
+    if (recaptchaSecret) {
+      const token = body.recaptchaToken?.trim();
+      if (!token) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Validation Error",
+          data: {
+            errors: [
+              "Güvenlik doğrulaması (reCAPTCHA) eksik. Lütfen sayfayı yenileyip tekrar deneyin.",
+            ],
+          },
+        });
+      }
+      try {
+        const verifyRes = await $fetch<{
+          success: boolean;
+          score?: number;
+          action?: string;
+          "error-codes"?: string[];
+        }>("https://www.google.com/recaptcha/api/siteverify", {
+          method: "POST",
+          body: new URLSearchParams({
+            secret: recaptchaSecret,
+            response: token,
+          }),
+        });
+        if (!verifyRes.success) {
+          const codes =
+            verifyRes["error-codes"]?.join(", ") || "doğrulama başarısız";
+          throw createError({
+            statusCode: 400,
+            statusMessage: "Validation Error",
+            data: { errors: [`Güvenlik doğrulaması geçersiz: ${codes}`] },
+          });
+        }
+        const score = verifyRes.score ?? 1;
+        if (score < 0.5) {
+          throw createError({
+            statusCode: 400,
+            statusMessage: "Validation Error",
+            data: {
+              errors: [
+                "Güvenlik doğrulaması skoru yetersiz. Lütfen tekrar deneyin.",
+              ],
+            },
+          });
+        }
+        // Test: terminalde reCAPTCHA sonucunu görmek için (isteğe bağlı kaldırılabilir)
+        console.log("[contact-request] reCAPTCHA doğrulandı:", {
+          score,
+          action: verifyRes.action,
+        });
+      } catch (err: any) {
+        if (err.statusCode === 400) throw err;
+        console.error(
+          "[contact-request] reCAPTCHA verify hatası:",
+          err?.message ?? err,
+        );
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Validation Error",
+          data: {
+            errors: ["Güvenlik doğrulaması yapılamadı. Lütfen tekrar deneyin."],
+          },
+        });
+      }
+    }
+
     console.log("[contact-request] Form doğrulandı, e-posta:", body.email);
 
-    const config = useRuntimeConfig();
     const { host, port, user, pass, from, fromName } = config.smtp ?? {};
     const notificationEmail = config.notificationEmail as string | undefined;
-    const inboxBcc = (config.inboxBcc as string | undefined)?.trim() || undefined;
-    
+    const inboxBcc =
+      (config.inboxBcc as string | undefined)?.trim() || undefined;
+
     // Gönderici adını formatla: "İsim <email>" veya sadece email
     const fromAddress = fromName && from ? `"${fromName}" <${from}>` : from;
 
-    console.log("[contact-request] SMTP host:", host, "port:", port, "from:", from);
-    console.log("[contact-request] NOTIFICATION_EMAIL:", notificationEmail ? `${notificationEmail.slice(0, 3)}***` : "(boş)");
+    console.log(
+      "[contact-request] SMTP host:",
+      host,
+      "port:",
+      port,
+      "from:",
+      from,
+    );
+    console.log(
+      "[contact-request] NOTIFICATION_EMAIL:",
+      notificationEmail ? `${notificationEmail.slice(0, 3)}***` : "(boş)",
+    );
 
     if (!host || !port || !user || !pass || !from) {
-      console.error("[contact-request] Eksik SMTP ayarı:", { host: !!host, port: !!port, user: !!user, pass: !!pass, from: !!from });
+      console.error("[contact-request] Eksik SMTP ayarı:", {
+        host: !!host,
+        port: !!port,
+        user: !!user,
+        pass: !!pass,
+        from: !!from,
+      });
       throw createError({
         statusCode: 500,
         statusMessage: "Mail Configuration Error",
@@ -88,7 +177,10 @@ export default defineEventHandler(async (event) => {
       await transporter.verify();
       console.log("[contact-request] SMTP bağlantısı doğrulandı.");
     } catch (verifyErr: any) {
-      console.error("[contact-request] SMTP verify hatası:", verifyErr?.message ?? verifyErr);
+      console.error(
+        "[contact-request] SMTP verify hatası:",
+        verifyErr?.message ?? verifyErr,
+      );
       throw verifyErr;
     }
 
@@ -113,10 +205,16 @@ export default defineEventHandler(async (event) => {
         response: autoreplyResult.response,
       });
       if (autoreplyResult.rejected?.length) {
-        console.warn("[contact-request] Autoreply reddedilen adresler:", autoreplyResult.rejected);
+        console.warn(
+          "[contact-request] Autoreply reddedilen adresler:",
+          autoreplyResult.rejected,
+        );
       }
     } catch (autoreplyErr: any) {
-      console.error("[contact-request] Autoreply gönderilemedi:", autoreplyErr?.message ?? autoreplyErr);
+      console.error(
+        "[contact-request] Autoreply gönderilemedi:",
+        autoreplyErr?.message ?? autoreplyErr,
+      );
       throw autoreplyErr;
     }
 
@@ -124,10 +222,19 @@ export default defineEventHandler(async (event) => {
     const notificationRecipient = notificationEmail?.trim();
     if (notificationRecipient) {
       try {
-        if (notificationRecipient.toLowerCase() === body.email.trim().toLowerCase()) {
-          console.warn("[contact-request] NOTIFICATION_EMAIL formu dolduran kişiyle aynı; bildirim yine de şirket adresine gidecek:", notificationRecipient);
+        if (
+          notificationRecipient.toLowerCase() ===
+          body.email.trim().toLowerCase()
+        ) {
+          console.warn(
+            "[contact-request] NOTIFICATION_EMAIL formu dolduran kişiyle aynı; bildirim yine de şirket adresine gidecek:",
+            notificationRecipient,
+          );
         }
-        console.log("[contact-request] Bildirim maili gönderiliyor, to (şirket):", notificationRecipient);
+        console.log(
+          "[contact-request] Bildirim maili gönderiliyor, to (şirket):",
+          notificationRecipient,
+        );
         const notificationHtml = contactNotificationTemplate
           .replace(/\{\{isim\}\}/g, body.name.trim())
           .replace(/\{\{soyisim\}\}/g, body.lastName.trim())
@@ -149,19 +256,28 @@ export default defineEventHandler(async (event) => {
           response: notifResult.response,
         });
         if (notifResult.rejected?.length) {
-          console.warn("[contact-request] Bildirim reddedilen adresler:", notifResult.rejected);
+          console.warn(
+            "[contact-request] Bildirim reddedilen adresler:",
+            notifResult.rejected,
+          );
         }
       } catch (notifErr: any) {
-        console.error("[contact-request] Bildirim maili gönderilemedi:", notifErr?.message ?? notifErr);
+        console.error(
+          "[contact-request] Bildirim maili gönderilemedi:",
+          notifErr?.message ?? notifErr,
+        );
         throw notifErr;
       }
     } else {
-      console.log("[contact-request] NOTIFICATION_EMAIL boş, bildirim atılmadı.");
+      console.log(
+        "[contact-request] NOTIFICATION_EMAIL boş, bildirim atılmadı.",
+      );
     }
 
     const response: ContactRequestResponse = {
       success: true,
-      message: "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.",
+      message:
+        "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.",
       data: { submittedAt },
     };
     return response;
@@ -170,13 +286,18 @@ export default defineEventHandler(async (event) => {
       throw error;
     }
 
-    console.error("[contact-request] İletişim Formu Hatası:", error?.message ?? error);
-    if (error?.response) console.error("[contact-request] SMTP response:", error.response);
+    console.error(
+      "[contact-request] İletişim Formu Hatası:",
+      error?.message ?? error,
+    );
+    if (error?.response)
+      console.error("[contact-request] SMTP response:", error.response);
     if (error?.stack) console.error("[contact-request] Stack:", error.stack);
     throw createError({
       statusCode: 500,
       statusMessage: "Internal Server Error",
-      message: "Form gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
+      message:
+        "Form gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
     });
   }
 });

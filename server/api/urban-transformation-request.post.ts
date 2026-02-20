@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Method Not Allowed",
     });
   }
+
   try {
     // Request body'yi al
     const body = await readBody<UrbanTransformationRequest>(event);
@@ -77,17 +78,89 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    const config = useRuntimeConfig();
+    const recaptchaSecret = (
+      config.recaptcha as { secretKey?: string } | undefined
+    )?.secretKey?.trim();
+
+    if (recaptchaSecret) {
+      const token = body.recaptchaToken?.trim();
+      if (!token) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Validation Error",
+          data: {
+            errors: [
+              "Güvenlik doğrulaması (reCAPTCHA) eksik. Lütfen sayfayı yenileyip tekrar deneyin.",
+            ],
+          },
+        });
+      }
+
+      try {
+        const verifyRes = await $fetch<{
+          success: boolean;
+          score?: number;
+          action?: string;
+          "error-codes"?: string[];
+        }>("https://www.google.com/recaptcha/api/siteverify", {
+          method: "POST",
+          body: new URLSearchParams({
+            secret: recaptchaSecret,
+            response: token,
+          }),
+        });
+        if (!verifyRes.success) {
+          const codes =
+            verifyRes["error-codes"]?.join(", ") || "doğrulama başarısız";
+          throw createError({
+            statusCode: 400,
+            statusMessage: "Validation Error",
+            data: { errors: [`Güvenlik doğrulaması geçersiz: ${codes}`] },
+          });
+        }
+        const score = verifyRes.score ?? 1;
+        if (score < 0.5) {
+          throw createError({
+            statusCode: 400,
+            statusMessage: "Validation Error",
+            data: {
+              errors: [
+                "Güvenlik doğrulaması skoru yetersiz. Lütfen tekrar deneyin.",
+              ],
+            },
+          });
+        }
+        console.log("[urban-transformation-request] reCAPTCHA doğrulandı:", {
+          score,
+          action: verifyRes.action,
+        });
+      } catch (err: any) {
+        if (err.statusCode === 400) throw err;
+        console.error(
+          "[urban-transformation-request] reCAPTCHA verify hatası:",
+          err?.message ?? err,
+        );
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Validation Error",
+          data: {
+            errors: ["Güvenlik doğrulaması yapılamadı. Lütfen tekrar deneyin."],
+          },
+        });
+      }
+    }
+
     console.log(
       "[urban-transformation-request] Form doğrulandı, e-posta:",
       body.email,
     );
 
-    const config = useRuntimeConfig();
     const { host, port, user, pass, from, fromName } = config.smtp ?? {};
     const notificationEmail = config.notificationEmail as string | undefined;
     const inboxBcc =
       (config.inboxBcc as string | undefined)?.trim() || undefined;
-    
+
     // Gönderici adını formatla: "İsim <email>" veya sadece email
     const fromAddress = fromName && from ? `"${fromName}" <${from}>` : from;
 
@@ -125,10 +198,7 @@ export default defineEventHandler(async (event) => {
       host,
       port: Number(port),
       secure: Number(port) === 465,
-      auth: {
-        user,
-        pass,
-      },
+      auth: { user, pass },
     });
 
     try {
@@ -179,7 +249,7 @@ export default defineEventHandler(async (event) => {
       throw autoreplyErr;
     }
 
-    // Şirket içi bildirim (contact-notification) — sadece NOTIFICATION_EMAIL adresine, formu dolduran kişiye değil
+    // Şirket içi bildirim (notification) — sadece NOTIFICATION_EMAIL adresine
     const notificationRecipient = notificationEmail?.trim();
     if (notificationRecipient) {
       try {
@@ -196,7 +266,6 @@ export default defineEventHandler(async (event) => {
           "[urban-transformation-request] Bildirim maili gönderiliyor, to (şirket):",
           notificationRecipient,
         );
-        // Template placeholder'larını doldur
         const notificationHtml = urbanTransformationNotificationTemplate
           .replace(/\{\{ad_soyad\}\}/g, body.fullName.trim())
           .replace(/\{\{eposta\}\}/g, body.email.trim())
@@ -238,13 +307,11 @@ export default defineEventHandler(async (event) => {
       );
     }
 
-    // Başarılı response
     const response: UrbanTransformationResponse = {
       success: true,
       message:
-        "Kentsel Dönüşüm Talep Formu başarıyla gönderildi. Size en kısa sürede dönüş yapacağız.",
+        "Kentsel Dönüşüm Talep Formu başarıyla gönderildi. En kısa sürede dönüş yapacağız.",
       data: {
-        id: Date.now().toString(), // Geçici ID, gerçek uygulamada veritabanından gelecek
         submittedAt,
       },
     };
